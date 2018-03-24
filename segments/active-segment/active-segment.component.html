@@ -1,0 +1,46 @@
+<div class="wrap">
+	<header>
+		<span>Активный сегмент</span>
+		<span>6<i class="users"></i></span>
+	</header>
+
+	<div class="controls" *ngIf="Segments === undefined">
+		<span class="loading"></span>
+	</div>
+
+	<app-segment-group
+		*ngIf="filterGroup('main')"
+		[All]="true"
+		[Visible]="true"
+		[Name]="'Основные'"
+		[Segments]="filterGroup('main')"
+		[(ActiveSegment)]="activeSegment">
+	</app-segment-group>
+
+	<app-segment-group
+		*ngIf="filterGroup('phone')"
+		[All]="false"
+		[Visible]="false"
+		[Name]="'Звонки'"
+		[Segments]="filterGroup('phone')"
+		[(ActiveSegment)]="activeSegment">
+	</app-segment-group>
+
+	<app-segment-group
+		*ngIf="filterGroup('communication')"
+		[All]="false"
+		[Visible]="false"
+		[Name]="'Диалоги'"
+		[Segments]="filterGroup('communication')"
+		[(ActiveSegment)]="activeSegment">
+	</app-segment-group>
+
+	<app-segment-group
+		*ngIf="filterGroup('contact')"
+		[All]="false"
+		[Visible]="false"
+		[Name]="'Контакты'"
+		[Segments]="filterGroup('contact')"
+		[(ActiveSegment)]="activeSegment">
+	</app-segment-group>
+</div>

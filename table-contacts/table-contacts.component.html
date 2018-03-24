@@ -1,0 +1,209 @@
+<div class="wrap {{ section }}">
+	<ul class="search-menu">
+		<li class="search">
+			<div>
+				<i class="search"></i>
+				<input type="text" placeholder="Искать...">
+			</div>
+		</li>
+
+		<li class="params" *ngIf="header.params && !short">
+			<app-table-params-dropdown [params]="table.params"></app-table-params-dropdown>
+		</li>
+
+		<li class="button download" *ngIf="header.download && !short"><i class="download"></i></li>
+
+		<li class="button refresh" *ngIf="header.refresh && !short"><i class="refresh"></i></li>
+	</ul>
+
+	<div class="header" #theadParent *ngIf="section != 'dialogues'">
+		<ul #thead *ngIf="header.visible">
+			<li class="contacts" *ngIf="visibleColumn('contacts')">
+				<i 	class="checkbox"
+					*ngIf="table.columns.checked['contacts']"
+					[class.checked]="selectedAll"
+					(click)="selectAll()">
+				</i>
+				Контакты&nbsp;<span>(4)</span>
+			</li>
+
+			<!-- ONLINE -->
+			<li class="online" *ngIf="visibleColumn('online')">На сайте</li>
+			<li class="points" *ngIf="visibleColumn('points')">Баллы</li>
+			<li class="pages" *ngIf="visibleColumn('pages')">Страница</li>
+			<!-- ONLINE -->
+
+			<!-- CALLS -->
+			<li class="phone" *ngIf="visibleColumn('phone')">Телефон&nbsp;<span>(24)</span></li>
+			<li class="date" *ngIf="visibleColumn('date')">Дата</li>
+			<li class="status" *ngIf="visibleColumn('status')">Статус</li>
+			<li class="record" *ngIf="visibleColumn('record')">Запись разговора</li>
+			<!-- CALLS -->
+
+			<li class="country" *ngIf="visibleColumn('country')">Страна</li>
+
+			<!-- ONLINE -->
+			<li class="calls" *ngIf="visibleColumn('calls')"><i class="calls"></i></li>
+			<li class="message" *ngIf="visibleColumn('message')"><i class="message"></i></li>
+			<li class="dialogues" *ngIf="visibleColumn('dialogues')"><i class="messages"></i></li>
+			<li class="views" *ngIf="visibleColumn('views')"><i class="view"></i></li>
+			<!-- ONLINE -->
+
+			<!-- CALLS -->
+			<li class="region" *ngIf="visibleColumn('region')">Регион</li>
+			<li class="city" *ngIf="visibleColumn('city')">Город</li>
+			<li class="source" *ngIf="visibleColumn('source')">Источник</li>
+			<!-- CALLS -->
+
+			<!-- CONTACTS -->
+			<li class="email" *ngIf="visibleColumn('email')">Почта&nbsp;<span>(3)</span></li>
+			<li class="activity" *ngIf="visibleColumn('activity')">Активность</li>
+			<li class="sessions" *ngIf="visibleColumn('sessions')">Сессии</li>
+			<li class="firstSource" *ngIf="visibleColumn('firstSource')">Первый источник</li>
+			<li class="firstUTM" *ngIf="visibleColumn('firstUTM')">Первая метка UTM</li>
+			<!-- CONTACTS -->
+		</ul>
+	</div>
+
+	<div class="table">
+		<div #tableOverlayLeft *ngIf="showOverlayLeft" class="overlay left"></div>
+
+		<div class="content" #tableContent>
+			<table #tbody  align="left">
+				<tbody>
+					<tr *ngIf="section == 'dialogues'" class="group" [ngClass]="{'selected': groupChat}">
+						<td class="contacts" (click)="onSelectGroup(i)">
+							<div class="icon-container no-photo online"><i class="contacts"></i></div>
+
+							<div class="content">
+								<div class="row">
+									<span class="name" (click)="showChat.emit()">Песочница</span>
+									<span class="time"><i class="delivery"></i>22:11</span>
+								</div>
+
+								<div class="row">
+									<span class="message"><s>SINTEZ:</s> Космет ПРО. Новый пропущенный звонок</span>
+								</div>
+							</div>
+						</td>
+					</tr>
+
+					<tr *ngFor="let item of contacts; let i = index;" [ngClass]="{'checked': item.checked, 'selected': item.selected}">
+						<td class="contacts" *ngIf="visibleColumn('contacts') && section!='dialogues'" (click)="onSelect(i)">
+							<i 	class="checkbox"
+								*ngIf="table.columns.checked['contacts']"
+								[class.checked]="item.checked"
+								(click)="onCheck(i)">
+							</i>
+
+							<div class="icon-container no-photo online" (click)="showChat.emit()"><i class="contacts"></i></div>
+							<span
+								(click)="showChat.emit()">
+									{{ (item.properties.name) ? item.properties.name + ' #' + item.id : '#' + item.id }}
+							</span>
+						</td>
+
+						<td class="contacts" *ngIf="visibleColumn('contacts') && section=='dialogues'" (click)="onSelect(i)">
+							<div class="icon-container no-photo online"><i class="contacts"></i></div>
+
+							<div class="content">
+								<div class="row">
+									<span class="name" (click)="showChat.emit()">
+										{{ (item.properties.name) ? item.properties.name + ' #' + item.id : '#' + item.id }}
+									</span>
+									<span class="time"><i class="delivery"></i>22:11</span>
+								</div>
+
+								<div class="row">
+									<span class="message"><s>Вы:</s> Извините за задержку, все будет ) Извините за задержку, все будет )</span>
+									<i class="count-messages">3</i>
+								</div>
+							</div>
+						</td>
+
+						<!-- ONLINE -->
+						<td class="online" *ngIf="visibleColumn('online')">{{ item.online }}</td>
+						<td class="points" *ngIf="visibleColumn('points')">{{ item.properties.score }}</td>
+						<td class="pages" *ngIf="visibleColumn('pages')">
+							<span *ngIf="item.properties.last_page && item.properties.last_page.name">
+								<a href="{{ item.properties.last_page.url }}">{{ item.properties.last_page.name }}</a><i class="new-tab"></i>
+							</span>
+						</td>
+						<!-- ONLINE -->
+
+						<!-- CALLS -->
+						<td class="phone" *ngIf="visibleColumn('phone')" [class.no-data]="!item.phone">{{ item.phone ? item.phone : "&mdash;" }}</td>
+						<td class="date" *ngIf="visibleColumn('date')">{{ item.date }}<br>{{ item.date }}</td>
+						<td class="status" *ngIf="visibleColumn('status')" [class.accepted]="item.status">{{ item.status ? "Отвечен" : "Пропущен" }}</td>
+						<td class="record" *ngIf="visibleColumn('record')" [class.no-data]="!item.record">
+							{{ item.record ? "" : "&mdash;" }}
+							<div class="td" *ngIf="item.record">
+								<div><button></button></div>
+								<span>{{ item.record }}</span>
+								<i></i>
+							</div>
+						</td>
+						<!-- CALLS -->
+
+						<td class="country" *ngIf="visibleColumn('country')"><i></i></td>
+
+						<!-- ONLINE -->
+						<td class="calls" *ngIf="visibleColumn('calls')">{{ item.properties.count_call ? item.properties.count_call : "&mdash;" }}</td>
+						<td class="message" *ngIf="visibleColumn('message')">{{ item.message }}</td>
+						<td class="dialogues" *ngIf="visibleColumn('dialogues')">{{ item.properties.count_message ? item.properties.count_message : "&mdash;" }}</td>
+						<td class="views" *ngIf="visibleColumn('views')">{{ item.views ? item.views : "&mdash;" }}</td>
+						<!-- ONLINE -->
+
+						<!-- CALLS -->
+						<td class="region" *ngIf="visibleColumn('region')" [class.no-data]="!item.properties.region">
+							{{ item.properties.region ? item.properties.region : "&mdash;" }}
+						</td>
+						<td class="city" *ngIf="visibleColumn('city')" [class.no-data]="!item.properties.city">
+							{{ item.properties.city ? item.properties.city : "&mdash;" }}
+						</td>
+						<td class="source" *ngIf="visibleColumn('source')" [class.no-data]="!item.source">
+							{{ item.source ? item.source : "&mdash;" }}
+						</td>
+						<!-- CALLS -->
+
+						<!-- CONTACTS -->
+						<td class="email" *ngIf="visibleColumn('email')" [class.no-data]="!item.email">
+							{{ item.email ? item.email : "&mdash;" }}
+						</td>
+						<td class="activity" *ngIf="visibleColumn('activity')" [class.online]="item.activity == 'на сайте'">
+							{{ item.activity ? item.activity : "&mdash;" }}
+						</td>
+						<td class="sessions" *ngIf="visibleColumn('sessions')" [class.no-data]="!item.properties.count_session">
+							{{ item.properties.count_session ? item.properties.count_session : "&mdash;" }}
+						</td>
+						<td class="firstSource" *ngIf="visibleColumn('firstSource')" [class.no-data]="!item.firstSource">
+							{{ item.firstSource ? item.firstSource : "&mdash;" }}
+						</td>
+						<td class="firstUTM" *ngIf="visibleColumn('firstUTM')" [class.no-data]="!item.firstUTM">
+							{{ item.firstUTM ? item.firstUTM : "&mdash;" }}
+						</td>
+						<!-- CONTACTS -->
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="controls" #controls>
+				<span class="loading" *ngIf="table.loading"></span>
+
+				<span class="load-more"
+					*ngIf="!table.loaded && !table.loading && !table.errorLoading.status"
+					(click)="onLoadMore()">
+						Загрузить еще контактов
+				</span>
+
+				<span class="error"
+					*ngIf="table.errorLoading && table.errorLoading.status">
+						Ошибка загрузки данных!<br/>(статус: {{ table.errorLoading.code }})
+				</span>
+				<span *ngIf="table.loaded && !table.errorLoading.status">Все контакты загружены</span>
+			</div>
+		</div>
+
+		<div #tableOverlayRight *ngIf="showOverlayRight" class="overlay right"></div>
+	</div>
+</div>

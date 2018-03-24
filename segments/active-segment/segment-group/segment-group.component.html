@@ -1,0 +1,20 @@
+<header [ngClass]="{'active': Visible}" *ngIf="Segments">
+	<span class="name">{{ Name }} <s>({{ Segments.length }})</s></span>
+	<div class="line"></div>
+	<i class="dropdown"></i>
+</header>
+
+<div class="segments-container" #segmentsWrap>
+	<ul class="list" #segmentsContent>
+		<li [ngClass]="{'selected': ActiveSegment.id == -1}"
+			*ngIf="All"
+			(click)="onSelectSegment(-1)">
+				Все
+		</li>
+		<li *ngFor="let segment of Segments"
+			(click)="onSelectSegment(segment.id)"
+			[ngClass]="{'selected': ActiveSegment.id == segment.id}">
+				{{ segment.name }}
+		</li>
+	</ul>
+</div>

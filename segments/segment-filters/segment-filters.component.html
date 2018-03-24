@@ -1,0 +1,127 @@
+<header>Фильтры активного сегмента</header>
+
+<app-create-segment
+	[ActiveSegment]="ActiveSegment"
+	(ActiveSegmentChange)="updateSelectedFilters($event)"
+	[ActiveFilterId]="activeFilterId"
+	(ActiveFilterIdChange)="activeFilterId = undefined">
+</app-create-segment>
+
+<ul *ngIf="ActiveSegment" #filtersEl (mouseleave)="resetDragAndDrop()">
+	<li *ngFor="let filter of ActiveSegment.filter; let i = index;"
+		[class.and]="filter._logicalOperator == 'AND' && i + 1 < ActiveSegment.filter.length"
+		[class.selected]="filter.selected"
+		(mousemove)="onMouseMove($event)"
+		(mousedown)="onMousedown(filter)"
+		(mouseup)="onMouseUp()">
+
+		<div class="content" [class.and]="filter._logicalOperator == 'AND'">
+			<p>
+				<span>{{ getTypeName(filter.type) }}</span>&#8594; 
+				<span>{{ filter.name }}</span> {{ filter.name ? "&#8594;" : "" }} 
+				<span>{{ filter.filterOperator_name }}</span>{{ filter.type == 'Property type' ? "&#8594;" : "" }} 
+				<span *ngIf="filter.type == 'Property type'">{{ filter.value }}</span>
+			</p>
+
+			<i class="close" (mousedown)="onDeleteFilter(i, $event)"></i>
+		</div>
+
+		<div class="operator"
+			(mouseleave)="filter.hover = false">
+				<div class="line"></div>
+
+				<div class="type"
+					*ngIf="i < ActiveSegment.filter.length - 1"
+					[class.hover]="filter.hover"
+					(mouseenter)="filter.hover = true">
+						<s *ngIf="filter.hover || filter._logicalOperator == 'AND'"
+							(mousedown)="onSetLogicalOperator($event, filter, true)">
+								и
+						</s>
+
+						<s *ngIf="filter.hover || filter._logicalOperator == 'OR' || filter._logicalOperator == null"
+							(mousedown)="onSetLogicalOperator($event, filter, false)">
+								или
+						</s>
+				</div>
+		</div>
+	</li>
+</ul>
+
+<div class="controls" *ngIf="!(ActiveSegment.id == -1 && !ActiveSegment.filter.length)">
+	<button class="delete"
+		(click)="onDeleteSegment()"
+		*ngIf="ActiveSegment.id != -1">
+			Удалить сегмент
+	</button>
+	<button class="save-as"
+		(click)="ActiveSegment.unsaved && ActiveSegment.filter.length ? visible.popup = true : 0"
+		[class.active]="ActiveSegment.unsaved && ActiveSegment.filter.length">
+			{{ ActiveSegment.id == -1 ? 'Создать сегмент' : 'Сохранить как...' }}
+	</button>
+</div>
+
+<!-- Вынести в компонент -->
+<div class="popup" *ngIf="visible.popup">
+	<div class="overlay"></div>
+
+	<div class="wrap">
+		<i class="close" (click)="visible.popup = false; statusPopup='none';"></i>
+
+		<div class="content">
+			<div class="setting" *ngIf="!loading && statusPopup=='none'">
+				<span class="header">Сохранить сегмент</span>
+
+				<div class="radio">
+					<p [class.checked]="isNewSegment" (click)="isNewSegment = true">
+						<i class="radio" [class.checked]="isNewSegment"></i>
+						<span>как новый</span>
+					</p>
+
+					<p [class.checked]="!isNewSegment" (click)="isNewSegment = false">
+						<i class="radio" [class.checked]="!isNewSegment"></i>
+						<span>как текущий</span>
+					</p>
+				</div>
+
+				<input type="text"
+					class="name"
+					placeholder="Название сегмента..."
+					[(ngModel)]="ActiveSegment.name">
+
+				<div class="dropdown group">
+					<div class="content">
+						<div class="header" (click)="data.group.buffer = ''">
+							<input type="text"
+								placeholder="Сравнение..."
+								[(ngModel)]="data.group.buffer"
+								(focus)="data.group.visible = true"
+								(focusout)="onFocusOut()">
+							<i class="dropdown" (click)="data.group.visible = !data.group.visible"></i>
+						</div>
+
+						<ul *ngIf="data.group.visible">
+							<li *ngFor="let item of data.group.data | byNameProperty: data.group.buffer; let i = index;">
+								<span (click)="onSelect(item.id)">{{ item.name }}</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="controls">
+					<button class="cancel" (click)="visible.popup = false; statusPopup='none';">Отмена</button>
+					<button class="save"
+						(click)="onSaveSegment()"
+						[class.active]="data.group.buffer && ActiveSegment.name">Сохранить</button>
+				</div>
+			</div>
+
+			<p class="success" *ngIf="!loading && statusPopup=='success'">Сегмент успешно {{ isNewSegment ? 'создан' : 'обновлен' }}!</p>
+
+			<p class="error" *ngIf="!loading && statusPopup=='error'">Произошла ошибка!</p>
+
+			<i class="preload" *ngIf="loading"></i>
+		</div>
+	</div>
+</div>
+<!-- Вынести в компонент -->

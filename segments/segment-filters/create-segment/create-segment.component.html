@@ -1,0 +1,38 @@
+<!-- [class.no-border]="!filters" -->
+
+<div class="loading" *ngIf="!loadProperties.loaded">
+	<span class="loading"></span>
+</div>
+
+<div class="new-filter" *ngIf="loadProperties.loaded">
+	<app-create-filter
+		*ngFor="let filter of filters; let i = index;"
+		[filter]="filter"
+		[data]="data"
+		[index]="i"
+		[isLastFilter]="i + 1 == filters.length"
+		(invokeRemoveFilter)="removeFilter($event)">
+	</app-create-filter>
+
+	<button class="add-filter"
+		*ngIf="filters[filters.length - 1].values.value !== '' && ActiveFilterId === undefined"
+		(click)="addFilter()">
+			<i class="plus"></i> Добавить фильтр
+	</button>
+
+	<div class="controls new"
+		*ngIf="filters[0].values.property">
+			<button
+				class="cancel"
+				(click)="onCancel()">
+					Отмена
+			</button>
+
+			<button
+				class="apply"
+				(click)="onApplyFilter()"
+				[class.active]="isActiveApplyButton()">
+						Применить
+			</button>
+	</div>
+</div>

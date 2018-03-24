@@ -1,0 +1,10 @@
+<app-active-segment
+	[Segments]="segments"
+	[(ActiveSegment)]="activeSegment">
+</app-active-segment>
+
+<app-segment-filters
+	[(ActiveSegment)]="activeSegment"
+	(invokeUpdateSegment)="updateSegment($event)"
+	(invokeDeleteSegment)="deleteSegment()">
+</app-segment-filters>

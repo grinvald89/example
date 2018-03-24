@@ -1,0 +1,30 @@
+<div class="dropdown {{ Property }}"
+	[class.visible]="Filter.visible[Property]">
+		<div class="line" *ngIf="Property != 'property'"></div>
+
+		<i class="close"
+			(click)="InvokeRemoveFilter.emit(Index)"
+			*ngIf="Property == 'property' && Index > 0"></i>
+
+		<div class="content" [class.first]="Index === 0">
+			<div class="header"
+				(click)="Filter.buffer[Property] = ''">
+					<input type="text"
+						placeholder="{{ Placeholder }}"
+						[(ngModel)]="!IsField ? Filter.buffer[Property] : Filter.values[Property]"
+ 						(focus)="Filter.visible[Property] = true"
+ 						(focusout)="onBlur(Property)">
+
+					<i class="dropdown"
+						[class.visible]="Filter.visible[Property]"
+						(click)="Filter.visible[Property] = !Filter.visible[Property]">
+					</i>
+			</div>
+
+			<ul *ngIf="Filter.visible[Property]">
+				<li *ngFor="let item of List | byNameProperty: Filter.buffer[Property]; let i = index;">
+					<span (click)="onSelect(Property, item.id)">{{ item.name }}</span>
+				</li>
+			</ul>
+		</div>
+</div>

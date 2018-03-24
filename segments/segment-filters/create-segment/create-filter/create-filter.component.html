@@ -1,0 +1,63 @@
+<div class="filter-content">
+	<app-segment-dropdown
+		Property="property"
+		Placeholder="Новый фильтр..."
+		[Filter]="filter"
+		[Index]="index"
+		[List]="data.property"
+		[AllList]="data.property"
+		(ClearFields)="clearFields($event)"
+		(SaveType)="saveType($event)"
+		(InvokeRemoveFilter)="invokeRemoveFilter.emit($event)">
+	</app-segment-dropdown>
+
+	<app-segment-dropdown
+		*ngIf="filter.values.property"
+		Property="name"
+		Placeholder="Параметр..."
+		[Filter]="filter"
+		[Index]="index"
+		[List]="data.name | byType: filter.values.type"
+		[AllList]="data.name | byType: filter.values.type">
+	</app-segment-dropdown>
+
+	<app-segment-dropdown
+		*ngIf="filter.values.name"
+		Property="filterOperator_name"
+		Placeholder="Сравнение..."
+		[Filter]="filter"
+		[Index]="index"
+		[List]="data.filterOperator_name | byType: filter.values.type"
+		[AllList]="data.filterOperator_name | byType: filter.values.type">
+	</app-segment-dropdown>
+
+	<app-segment-dropdown
+		*ngIf="filter.values.filterOperator_name && filter.values.type != 'Event type'"
+		IsField="true"
+		Property="value"
+		Placeholder="Значение..."
+		[Filter]="filter"
+		[Index]="index"
+		[List]="data.value"
+		[AllList]="data.value">
+	</app-segment-dropdown>
+</div>
+
+<div class="operator" *ngIf="!isLastFilter">
+	<div class="line"></div>
+
+	<div class="type"
+		[class.hover]="hover"
+		(mouseenter)="hover = true"
+		(mouseleave)="hover = false">
+			<s *ngIf="hover || filter._logicalOperator == 'AND'"
+				(click)="filter._logicalOperator = 'AND'">
+					и
+			</s>
+
+			<s *ngIf="hover || filter._logicalOperator == 'OR' || filter._logicalOperator == null"
+				(click)="filter._logicalOperator = 'OR'">
+					или
+			</s>
+	</div>
+</div>
